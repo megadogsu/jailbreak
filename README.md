@@ -1,4 +1,4 @@
-Using iPhone2,1_5.0_9A334_Restore.ipsw
+Using iPhone2,1_5.1.1_9B206_Restore.ipsw
 
 Command to boot forensic image:
 
