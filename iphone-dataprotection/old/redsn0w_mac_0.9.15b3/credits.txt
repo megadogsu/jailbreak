@@ -1,0 +1,44 @@
+redsn0w
+Copyright (C) 2007-2012 by iPhone Dev Team
+
+Additional Credits
+------------------
+5.1.1 A5 untether:
+   vulnerability: @pod2g, @planetbeing, @pimskeks
+   exploit:       @pod2g, @planetbeing
+
+5.0.x A5 untether:
+   vulnerability: @pod2g
+   exploit work:  @pod2g, @planetbeing, @saurik, @pimskeks, @p0sixninja, @MuscleNerd, and @xvolks
+
+5.0.x untether:
+   vulnerability: @pod2g
+   exploit:       @pod2g
+
+4.3.3 untether:
+   vulnerability: Stefan Esser (@i0n1c)
+   exploit:       Stefan Esser (@i0n1c)
+
+4.3.2 untether:
+   vulnerability: Stefan Esser (@i0n1c)
+   exploit:       Stefan Esser (@i0n1c)
+
+4.3.1 untether:
+   vulnerability: Stefan Esser (@i0n1c)
+   exploit:       Stefan Esser (@i0n1c)
+
+4.2.1 untether:
+   vulnerability: chronic dev team
+   exploit:       chronic dev team
+
+limera1n for iPhone 3GS, iPhone4, iPad, iPod touch 3G, iPod touch 4G:
+   vulnerability: geohot
+   exploit:       geohot
+
+24kpwn for iPod touch 2G and early-model iPhone 3GS:
+   vulnerability: pod2g, MuscleNerd
+   exploit:       planetbeing, CPICH, posixninja, chronic, pod2g
+
+steaks4uce for iPod touch 2G (MC model):
+   vulnerability: @pod2g
+   exploit:       @pod2g
