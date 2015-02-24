@@ -128,11 +128,11 @@ public class WebScraper {
 		final int retryDelay = 30;
 		for (int i=0; i < retries; ++i) {
 			if (i != 0) {
-				gui.error("The iPhone Wiki seems a bit down; retrying in %d sec..", retryDelay);
+				jailbreak.error("The iPhone Wiki seems a bit down; retrying in %d sec..", retryDelay);
 				try {
 					Thread.sleep(retryDelay * 1000);
 				} catch (InterruptedException e) {
-					gui.exc(e);
+					jailbreak.exc(e);
 				}
 			}
 			try {
@@ -150,9 +150,9 @@ public class WebScraper {
 				}
 				return null;
 			} catch (MalformedURLException e) {
-				gui.exc(e);
+				jailbreak.exc(e);
 			} catch (IOException e) {
-				gui.exc(e);
+				jailbreak.exc(e);
 			}
 		}
 		return null;

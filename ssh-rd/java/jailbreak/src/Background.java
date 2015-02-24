@@ -44,9 +44,9 @@ public class Background implements Runnable {
 		InputStream is = null;
 		String result = null;
 		try {
-			is = gui.class.getResourceAsStream(resName);
+			is = jailbreak.class.getResourceAsStream(resName);
 			if (is == null) {
-				gui.error("Error: Cannot load resource %s", resName);
+				jailbreak.error("Error: Cannot load resource %s", resName);
 				return null;
 			}
 			File diskFile = new File(new File(workingDir()), path);
@@ -54,11 +54,11 @@ public class Background implements Runnable {
 			String diskPath = diskFile.toString();
 			writer = new FileOutputStream(diskFile);
 			IOUtils.copy(is, writer);
-			gui.trace("Extracted resource to %s", diskPath);
+			jailbreak.trace("Extracted resource to %s", diskPath);
 			result = diskPath;
 		} catch (IOException e) {
-			gui.error("Failed to extract resource %s", resName);
-			gui.exc(e);
+			jailbreak.error("Failed to extract resource %s", resName);
+			jailbreak.exc(e);
 		} finally {
 			IOUtils.closeQuietly(is);
 			IOUtils.closeQuietly(writer);
@@ -168,21 +168,21 @@ public class Background implements Runnable {
 		File zipFile = new File(new File(workingDir()), zipName);
 		if (isUrl && !zipFile.exists()) {
 			if (spamOnce) {
-				gui.log("Local file %s not found; downloading from %s", 
+				jailbreak.log("Local file %s not found; downloading from %s", 
 						zipFile.getAbsolutePath(), 
 						zipUrl);
 			}
 			return 0 == Jsyringe.download_file_from_zip(zipUrl, zipPath, downloadPath);
 		}
 		while (!zipFile.exists()) {
-			gui.log(gui.MessageStyle.Important, "Please put %s in the %s directory (URL not public)", zipName, workingDir());
+			jailbreak.log(jailbreak.MessageStyle.Important, "Please put %s in the %s directory (URL not public)", zipName, workingDir());
 			try {
 				Thread.sleep(5* 1000);
 			} catch (InterruptedException e) {
 			}				
 		}
 		if (spamOnce) {
-			gui.log("Using local file %s", zipName);
+			jailbreak.log("Using local file %s", zipName);
 		}
 		try {
 			ZipFile zf = new ZipFile(zipFile);
@@ -191,20 +191,20 @@ public class Background implements Runnable {
 			IOUtils.copy(is, new FileOutputStream(downloadPath));
 			return true;
 		} catch (IOException e) {
-			gui.error("IOException unpacking %s, check IPSW", zipPath);
-			gui.exc(e);
+			jailbreak.error("IOException unpacking %s, check IPSW", zipPath);
+			jailbreak.exc(e);
 			return false;
 		}
 	}
 	
 	String downloadAndProcessFile(String zipPath) 
 	{
-		gui.trace("Downloading %s", zipPath);
+		jailbreak.trace("Downloading %s", zipPath);
 		String finalPath = new File(new File(ipswDir()), zipPath).getPath();
 		// Ensure directory exists
 		File finalFile = new File(finalPath);
 		if (finalFile.exists()) {
-			gui.trace("Skipping processing of %s, file already exists!", finalPath);
+			jailbreak.trace("Skipping processing of %s, file already exists!", finalPath);
 			return finalPath;
 		}
 		finalFile.getParentFile().mkdirs(); 
@@ -215,13 +215,13 @@ public class Background implements Runnable {
 		if (needsDecrypting)
 			downloadPath = finalPath + ".orig";
 		if (new File(downloadPath).exists()) {
-			gui.trace("Skipping download of %s, file already exists!", finalPath);
+			jailbreak.trace("Skipping download of %s, file already exists!", finalPath);
 		} else {
 			if (!getFileFromZip(ipswUrl, zipPath, downloadPath)) {
-				gui.error("Download failed! %1$s [%2$s] -> %3$s", ipswUrl, zipPath, downloadPath);
+				jailbreak.error("Download failed! %1$s [%2$s] -> %3$s", ipswUrl, zipPath, downloadPath);
 				return null;
 			}
-			gui.trace("Downloaded to %s", downloadPath);
+			jailbreak.trace("Downloaded to %s", downloadPath);
 		}
 		
 		if (needsDecrypting) {
@@ -229,48 +229,48 @@ public class Background implements Runnable {
 			if (!Jsyringe.process_img3_file(downloadPath, decryptedPath, null, 
 					stringFromNsDict(dict, fileProps.get("iv")), 
 					stringFromNsDict(dict, fileProps.get("key")))) {
-				gui.error("Decryption failed");
+				jailbreak.error("Decryption failed");
 				return null;
 			}
-			gui.trace("Decrypted to %s", decryptedPath);
+			jailbreak.trace("Decrypted to %s", decryptedPath);
 			String patch = fileProps.get("patch");
 			if (patch != null) {
 				String patchedPath = decryptedPath + ".p";
 				String patchJson = Background.getResourceFile(patch);
 				if (patchJson == null) {
-					gui.error("getResourceFile(%s) failed, log a bug!", patch);
+					jailbreak.error("getResourceFile(%s) failed, log a bug!", patch);
 					return null;
 				}
 				if (!Jsyringe.fuzzy_patch(decryptedPath, patchedPath, patchJson, 80)) {
-					gui.error("Patching failed");
+					jailbreak.error("Patching failed");
 					return null;
 				}
 				decryptedPath = patchedPath;
-				gui.trace("Patched to %s", patchedPath);
+				jailbreak.trace("Patched to %s", patchedPath);
 			}
 			if (fileProps.containsKey("ramdisk")) {
 				String sshTarFile = Background.getResourceFile("ssh.tar");
 				if (sshTarFile == null) {
-					gui.error("getResourceFile(ssh.tar) failed, log a bug!");
+					jailbreak.error("getResourceFile(ssh.tar) failed, log a bug!");
 					return null;
 				}
 				long extend;
 				long tarLength = new File(sshTarFile).length();
 				if (tarLength == 0) {
-					gui.error("Can't get tar file size!");
+					jailbreak.error("Can't get tar file size!");
 					return null;
 				}
 				extend = (long)(1.05 * (double)(tarLength));
 				if (!Jsyringe.add_ssh_to_ramdisk(decryptedPath, sshTarFile, extend)) {
-					gui.error("Adding ssh to ramdisk failed!");
+					jailbreak.error("Adding ssh to ramdisk failed!");
 					return null;
 				}
-				gui.trace("Added ssh.tar to the ramdisk");
+				jailbreak.trace("Added ssh.tar to the ramdisk");
 			}
 			if (!Jsyringe.process_img3_file(decryptedPath, finalPath, downloadPath, 
 					stringFromNsDict(dict, fileProps.get("iv")),
 					stringFromNsDict(dict, fileProps.get("key")))) {
-				gui.error("Encryption failed");
+				jailbreak.error("Encryption failed");
 				return null;
 			}
 		}
@@ -289,7 +289,7 @@ public class Background implements Runnable {
 			Hashtable<String,String>dict = null;
 			for (int fwPageIndex = urls.size() - 1; fwPageIndex >= 0 ; --fwPageIndex) {
 				String url = urls.get(fwPageIndex);
-				gui.trace("wiki URL: %s", url);
+				jailbreak.trace("wiki URL: %s", url);
 				dict = WebScraper.loadAndParseFirmwarePage(url);
 				if (dict == null)
 					continue;
@@ -297,10 +297,10 @@ public class Background implements Runnable {
 	    			String key = it.next();
 	    			String value = dict.get(key);
 	    			if (value != null) {
-	    				gui.trace("%s\t: %s", key, value);
+	    				jailbreak.trace("%s\t: %s", key, value);
 	    			}
 				}
-				gui.trace("Enough keys: %s", WebScraper.hasEnoughKeys(dict) ? "YES" : "NO");
+				jailbreak.trace("Enough keys: %s", WebScraper.hasEnoughKeys(dict) ? "YES" : "NO");
 				
 				if (WebScraper.hasEnoughKeys(dict)) {
 					ok = true;
@@ -316,21 +316,21 @@ public class Background implements Runnable {
 					nsDict.put(key, val);
 				}
 				plDict.put(dp.apName, nsDict);
-				gui.trace("Added %s!", dp.apName);				
+				jailbreak.trace("Added %s!", dp.apName);				
 			} else {
 				++cSkipped;
-				gui.trace("Skipped %s!", dp.apName);
+				jailbreak.trace("Skipped %s!", dp.apName);
 			}
 		}
 		if (cSkipped != 0)
 			return false;
 		try {
 			PropertyListParser.saveAsXML(plDict, new File("/tmp/all_keys.plist"));
-			gui.success("Saved everything to file!");
+			jailbreak.success("Saved everything to file!");
 			return true;
 		} catch (IOException e1) {
-			gui.error("Fetching keys from TheIphoneWiki failed!");
-			gui.exc(e1);
+			jailbreak.error("Fetching keys from TheIphoneWiki failed!");
+			jailbreak.exc(e1);
 		}
 		return false;
 	}
@@ -350,24 +350,24 @@ public class Background implements Runnable {
  			Device dev = new Device(0x1222, pType);
 			onDfuDeviceArrival(dev);
 			if (!_payloadCreatedOk) {
-				gui.error("Error testing %s", dev.getName());
+				jailbreak.error("Error testing %s", dev.getName());
 				++cErrors;
 			} else {
-				gui.success("Device %s passed!", dev.getName());
+				jailbreak.success("Device %s passed!", dev.getName());
 			}
 		}
 		if (cErrors != 0) {
-			gui.error("There were %d errors!", cErrors);
+			jailbreak.error("There were %d errors!", cErrors);
 		} else 
-			gui.success("All devices passed!");
+			jailbreak.success("All devices passed!");
 	}
 	
 	public void run()
 	{
 		try {
-			if (gui.getTestOption()) {
+			if (jailbreak.getTestOption()) {
 				runTests();
-			} else if (gui.getFetchOption()) {
+			} else if (jailbreak.getFetchOption()) {
 				fetchKeysFromWiki();
 			} else {
 				while (true) {
@@ -377,20 +377,20 @@ public class Background implements Runnable {
 				}
 			}
 		} catch (Exception e) {
-			gui.error("!! FAIL: Unhandled exception in background thread: %s, %s", e.toString(), e.getMessage());
-			gui.exc(e);
+			jailbreak.error("!! FAIL: Unhandled exception in background thread: %s, %s", e.toString(), e.getMessage());
+			jailbreak.exc(e);
 		}
 	}
 	
 	void onDfuDeviceArrival(Device dev) 
 	{
-		gui.trace("DFU device '%s' connected", dev.getName());
+		jailbreak.trace("DFU device '%s' connected", dev.getName());
 		if (dev.isUnsupported()) {
-			gui.error("Ignoring unsupported device %s", dev.getName());
+			jailbreak.error("Ignoring unsupported device %s", dev.getName());
 			return;
 		}
 		if (this.device != null && this.device.getName().equals(dev.getName())) {
-			gui.trace("Ignoring same device %s", dev.getName());
+			jailbreak.trace("Ignoring same device %s", dev.getName());
 			return;
 		}
 		this.device = dev;
@@ -399,24 +399,24 @@ public class Background implements Runnable {
 	
 	void prepareRamdiskForDevice()
 	{	
-		gui.log(gui.MessageStyle.Important, "Building ramdisk for device '%s'", device.getName());
+		jailbreak.log(jailbreak.MessageStyle.Important, "Building ramdisk for device '%s'", device.getName());
 		_ipswDir = null;
 		String keyFileName = Background.getResourceFile("all_keys.plist");
 		NSDictionary plDict;
 		try {
 			plDict = (NSDictionary)PropertyListParser.parse(new File(keyFileName));
 		} catch (Exception e1) {
-			gui.error("Cannot load all_keys.plist from resources; bailing !");
-			gui.exc(e1);
+			jailbreak.error("Cannot load all_keys.plist from resources; bailing !");
+			jailbreak.exc(e1);
 			return;
 		}
 		dict = (NSDictionary)plDict.objectForKey(device.getAp());
 
-		gui.trace("Working dir set to %s", workingDir());
+		jailbreak.trace("Working dir set to %s", workingDir());
 		
 		ipswUrl = stringFromNsDict(dict, WebScraper.downloadUrl);
 		
-		gui.trace("IPSW at %s", ipswUrl);
+		jailbreak.trace("IPSW at %s", ipswUrl);
 		
 		if (device.isWtfStub()) {
 			dict.put(WebScraper.device, "dfu8900");
@@ -424,12 +424,12 @@ public class Background implements Runnable {
 		
 		String restorePlistFile = downloadAndProcessFile("Restore.plist");
 		if (restorePlistFile == null) {
-			gui.error("Restore.plist download failed!");
+			jailbreak.error("Restore.plist download failed!");
 			return;
 		}
-		gui.trace("Restore.plist downloaded to %s", restorePlistFile);
+		jailbreak.trace("Restore.plist downloaded to %s", restorePlistFile);
 		
-		gui.trace("Parsing Restore.plist..");
+		jailbreak.trace("Parsing Restore.plist..");
 		
 		File restorePlist = new File(restorePlistFile);
 		
@@ -437,7 +437,7 @@ public class Background implements Runnable {
 		try {
 			restoreDict = (NSDictionary)PropertyListParser.parse(restorePlist);
 		} catch (Exception e) {
-			gui.error("Can't parse Restore.plist, bailing!");
+			jailbreak.error("Can't parse Restore.plist, bailing!");
 			e.printStackTrace();
 			return;
 		}
@@ -462,11 +462,11 @@ public class Background implements Runnable {
 			kcDict = (NSDictionary)restoreDict.objectForKey("RestoreKernelCaches");
 		}
 		String kernelName = stringFromNsDict(kcDict, "Release");		
-		gui.trace("Kernel file: %s", kernelName);
+		jailbreak.trace("Kernel file: %s", kernelName);
 		
 		NSDictionary ramdisksDict = (NSDictionary)restoreDict.objectForKey("RestoreRamDisks");
 		String ramdiskName = stringFromNsDict(ramdisksDict, "User");		
-		gui.trace("Restore ramdisk file: %s", ramdiskName);
+		jailbreak.trace("Restore ramdisk file: %s", ramdiskName);
 		
 		String dfuFolder = "Firmware/dfu/";
 		String ibssName = String.format("iBSS.%s.RELEASE.dfu", device.getAp());
@@ -476,10 +476,10 @@ public class Background implements Runnable {
 			String ibssFile = downloadAndProcessFile(ibssPath);
 		
 			if (ibssFile == null) {
-				gui.error("iBSS download failed!");
+				jailbreak.error("iBSS download failed!");
 				return;
 			}
-			gui.trace("iBSS prepared at %s", ibssFile);
+			jailbreak.trace("iBSS prepared at %s", ibssFile);
 		}
 		
 		String ibecFile = null;
@@ -490,10 +490,10 @@ public class Background implements Runnable {
 			ibecFile = downloadAndProcessFile(ibecPath);
 			
 			if (ibecFile == null) {
-				gui.error("iBEC download failed!");
+				jailbreak.error("iBEC download failed!");
 				return;
 			}
-			gui.trace("iBEC prepared at %s", ibecFile);
+			jailbreak.trace("iBEC prepared at %s", ibecFile);
 		}
 
 		String wtf8900File = null;
@@ -507,20 +507,20 @@ public class Background implements Runnable {
 			wtf8900File = downloadAndProcessFile(wtf8900Path);
 			
 			if (wtf8900File == null) {
-				gui.error("WTF.s5l8900xall download failed!");
+				jailbreak.error("WTF.s5l8900xall download failed!");
 				return;
 			}
-			gui.trace("WTF.s5l8900xall prepared at %s", wtf8900File);
+			jailbreak.trace("WTF.s5l8900xall prepared at %s", wtf8900File);
 		
 			if (!device.isWtfStub()) {
 				wtfModelFile = downloadAndProcessFile(wtfModelPath);
 					
 				if (wtfModelFile == null) {
-					gui.error("%s download failed!", wtfModelName);
+					jailbreak.error("%s download failed!", wtfModelName);
 					return;
 				}
 				
-				gui.trace("%s prepared at %2s", wtfModelName, wtfModelFile);
+				jailbreak.trace("%s prepared at %2s", wtfModelName, wtfModelFile);
 			}
 		}
 		
@@ -532,10 +532,10 @@ public class Background implements Runnable {
 			String deviceTreeFile = downloadAndProcessFile(deviceTreePath);
 		
 			if (deviceTreeFile == null) {
-				gui.error("Device tree download failed!");
+				jailbreak.error("Device tree download failed!");
 				return;
 			}
-			gui.trace("Device tree prepared at %s", deviceTreeFile);
+			jailbreak.trace("Device tree prepared at %s", deviceTreeFile);
 		
 
 			String manifestPath = String.format("Firmware/all_flash/all_flash.%s.production/manifest", device.getAp());
@@ -543,26 +543,26 @@ public class Background implements Runnable {
 			String manifestFile = downloadAndProcessFile(manifestPath);
 		
 			if (manifestFile == null) {
-				gui.error("Manifest download failed!");
+				jailbreak.error("Manifest download failed!");
 				return;
 			}
 		
 			String kernelFile = downloadAndProcessFile(kernelName);
 			
 			if (kernelFile == null) {
-				gui.trace("Kernel download failed!");
+				jailbreak.trace("Kernel download failed!");
 				return;
 			}
 	
-			gui.trace("Kernel prepared at %s", kernelFile);
+			jailbreak.trace("Kernel prepared at %s", kernelFile);
 			
 			String ramdiskFile = downloadAndProcessFile(ramdiskName);
 			
 			if (ramdiskFile == null) {
-				gui.error("Ramdisk download failed!");
+				jailbreak.error("Ramdisk download failed!");
 				return;
 			}
-			gui.trace("Ramdisk prepared at %s", ramdiskFile);
+			jailbreak.trace("Ramdisk prepared at %s", ramdiskFile);
 			
 			if (_payloadCreationTest) {
 				_payloadCreatedOk = true;
@@ -570,12 +570,12 @@ public class Background implements Runnable {
 			}
 	
 			if (!device.isWtf()) {
-				gui.log("Using syringe to exploit the bootrom..");
+				jailbreak.log("Using syringe to exploit the bootrom..");
 				if (0 != Jsyringe.exploit()) {
-					gui.error("Exploiting the device failed!");
+					jailbreak.error("Exploiting the device failed!");
 					return;
 				}
-				gui.success("Exploit sent!");
+				jailbreak.success("Exploit sent!");
 			}
 		} // endif (!device.isWtfStub())
 		if (_payloadCreationTest) {
@@ -584,21 +584,21 @@ public class Background implements Runnable {
 		}
 		
 		if (!device.isWtfStub()) {
-			gui.log("Preparing to load the ramdisk..");
+			jailbreak.log("Preparing to load the ramdisk..");
 			_ramdiskSent = true;
 		} else
-			gui.log("Trying to pwn 8900 DFU mode..");
+			jailbreak.log("Trying to pwn 8900 DFU mode..");
 			
 		if (!Jsyringe.restore_bundle(ipswDir())) {
 			if (!device.isWtfStub()) 
-				gui.error("Failed to use iTunes API to load the ramdisk!");
+				jailbreak.error("Failed to use iTunes API to load the ramdisk!");
 			else
-				gui.error("Failed to use iTunes API to load the 8900 exploit!");
+				jailbreak.error("Failed to use iTunes API to load the 8900 exploit!");
 			return;
 		}
 		if (!device.isWtfStub()) 
-			gui.log("Ramdisk load started!");
+			jailbreak.log("Ramdisk load started!");
 		 else
-			gui.log("8900 exploit load started!");
+			jailbreak.log("8900 exploit load started!");
 	}
 }

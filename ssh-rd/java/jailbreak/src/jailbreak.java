@@ -6,15 +6,16 @@ import javax.swing.text.*;
 
 import org.apache.commons.cli.*;
 
-public class gui extends Frame {
+public class jailbreak extends Frame {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	static JTextPane log;
-	Handler handler;
+	jailbreak_Handler handler;
 	private CommandLine _cmd;
-	private static gui s_gui;
+	private static jailbreak s_gui;
+	static String newline = System.getProperty("line.separator");
 	
 	public static boolean getTestOption() {
 		return s_gui._cmd.hasOption('t');
@@ -40,32 +41,37 @@ public class gui extends Frame {
 	
 	String getVersion()
 	{
-		return "29-06-2013 git rev-04b";
+		return "24-02-2015";
 	}
 
 	public static void log(String format, Object... args)
 	{
-		log(MessageStyle.Normal, format, args);		
+		System.out.printf(format + newline, args);
+		// log(MessageStyle.Normal, format, args);		
 	}
 	
 	public static void trace(String format, Object... args)
 	{
-		log(MessageStyle.Trace, format, args);				
+		System.out.printf(format + newline, args);
+		// log(MessageStyle.Trace, format, args);				
 	}
 
 	public static void warn(String format, Object... args)
 	{
-		log(MessageStyle.Warning, format, args);		
+		System.out.printf(format + newline, args);
+		// log(MessageStyle.Warning, format, args);		
 	}
 
 	public static void error(String format, Object... args)
 	{
-		log(MessageStyle.Error, format, args);		
+		System.out.printf(format + newline, args);
+		// log(MessageStyle.Error, format, args);		
 	}
 	
 	public static void success(String format, Object... args)
 	{
-		log(MessageStyle.Success, format, args);		
+		System.out.printf(format + newline, args);
+		// log(MessageStyle.Success, format, args);		
 	}
 
 	static void throwableErr(Throwable t) 
@@ -114,7 +120,7 @@ public class gui extends Frame {
 		
 		SwingUtilities.invokeLater(new Runnable() {
 		    public void run() { 
-		    	gui.appendStyledStringMain(style, s); 
+		    	//jailbreak.appendStyledStringMain(style, s); 
 		    }
 		});
 	}
@@ -165,42 +171,41 @@ public class gui extends Frame {
 	void about()
 	{
         log(" ");
-        log(" SSH ramdisk maker & loader, version %s", getVersion());
-        log("Made possible thanks to Camilo Rodrigues (@Allpluscomputer)");
-        log("Including xpwn source code by the Dev Team and planetbeing");
-        log("Including syringe source code by Chronic-Dev and posixninja");
-        log("syringe exploits by pod2g, geohot & posixninja");
-        log("Special thanks to iH8sn0w");
-        log("device-infos source: iphone-dataprotection");
-        log("Report bugs to msft.guy<msft.guy@gmail.com> (@msft_guy)");
+        log("git repo: https://github.com/megadogsu/jailbreak.git");
+        log("-------------EECS 588 !05 jailbreak tool------------");
+        log("SSH ramdisk maker & loader, version %s", getVersion());
+        log("Thanks to:");
+        log("Source code from xpwn by Dev Team and syringe by Chronic-Dev");
+        log("Syringe exploits by pod2g, geohot & posixninja");
+        log("Decryption source: iphone-dataprotection");
+        log("-----------------by Chin-Po & Kyle------------------");
         log(" ");
         log(" ");
 	}
 	
-	gui(CommandLine cmd) 
+	jailbreak(CommandLine cmd) 
 	{
 		s_gui = this;
 		this._cmd = cmd;
 		SwingUtilities.invokeLater(new Runnable() {//help prevent some weird Swing-related deadlocks
 		    public void run() { 
-		    	guiInit();
+		    	jailbreakInit();
 		    }
 		});
 	}
 	
-	void guiInit() 
+	void jailbreakInit() 
 	{
-		GridLayout layout = new GridLayout(1,1);
-        setLayout(layout);
+		//GridLayout layout = new GridLayout(1,1);
+        //setLayout(layout);
                 
-        log = new JTextPane();
-        JScrollPane scrollPane = new JScrollPane(log);
-        scrollPane.setVerticalScrollBarPolicy(
-                        JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        //log = new JTextPane();
+        //JScrollPane scrollPane = new JScrollPane(log);
+        //scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
-        add(scrollPane);
+        //add(scrollPane);
         
-        log.setEditable(false);
+        //log.setEditable(false);
 
         about();
         
@@ -208,17 +213,17 @@ public class gui extends Frame {
         	error("\n INIT FAILED (Jsyringe)!");
         } else if (!Jsyringe.startMuxThread(22, 2022)) {
            	error("\n INIT FAILED (mux thread)!"); 
-           	log(MessageStyle.Important, "Possible causes:\n    iTunes 9 or newer is NOT installed.\n    Could not bind to the port 2022 (make sure only one instance is running!");
+           	System.out.printf("Possible causes:\n    iTunes 9 or newer is NOT installed.\n    Could not bind to the port 2022 (make sure only one instance is running!");
 		} else {
 	        MobileDevice.start();        
 			Background.start();
 			
-	        log(MessageStyle.Important, "\nConnect a device in DFU mode");
+	        System.out.printf("\nConnect a device in DFU mode");
         }
-		handler = new Handler();
-        addWindowListener (handler);
-        setSize(500, 400);
-        setVisible(true);
+		//handler = new Handler();
+        //addWindowListener (handler);
+        //setSize(500, 400);
+        //setVisible(true);
 	}
 	
 	public static void main (String [] args) {
@@ -236,11 +241,11 @@ public class gui extends Frame {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		new gui(cmd);
+		new jailbreak(cmd);
 	}
 }
 
-class Handler extends WindowAdapter {
+class jailbreak_Handler extends WindowAdapter {
 	public void windowClosing (WindowEvent event) {
         System.exit (0);
     }

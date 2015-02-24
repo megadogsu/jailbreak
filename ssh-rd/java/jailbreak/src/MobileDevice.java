@@ -51,20 +51,21 @@ public class MobileDevice implements Runnable {
 	void callback(int intType, int productId, int productType) {
 		CallbackType type = getCallbackType(intType);
 		String eventName = type.name();
-		gui.trace("MobileDevice event: %1$s, %2$x, %3$x", eventName, productId, productType);
+		jailbreak.trace("MobileDevice event: %1$s, %2$x, %3$x", eventName, productId, productType);
 		switch (type) {
 			case DfuConnect:
 				Background.getQueue().add(new Device(productId, productType));
 				break;
 			case RecoveryDisconnect:
 				if (Background.ramdiskSent())
-					gui.log("Almost there..");
+					jailbreak.log("Almost there..");
 				break;
 			case MuxConnect:
 				if (!connected && Background.ramdiskSent()) {
 					connected = true;
-					gui.success("\nSuccess!\nConnect to localhost on port 2022 with your favorite SSH client!");	
-					gui.log(gui.MessageStyle.Important, "\n login: root\n password: alpine");	
+					jailbreak.success("\nSuccess!\nConnect to localhost on port 2022 with your favorite SSH jailbreakent!");	
+					jailbreak.log(jailbreak.MessageStyle.Important, "\n login: root\n password: alpine");
+					System.exit(0);	
 				}
 				break;
 		}
@@ -73,10 +74,10 @@ public class MobileDevice implements Runnable {
 	public void run() {
 		try {
 			Jsyringe.runMobileDeviceThread(this);
-			gui.error("MobileDevice thread proc returned! It really should not!");
+			jailbreak.error("MobileDevice thread proc returned! It really should not!");
 		} catch (Exception e) {
-			gui.error("!! FAIL: Unhandled exception in MobileDevice thread!");
-			gui.exc(e);			
+			jailbreak.error("!! FAIL: Unhandled exception in MobileDevice thread!");
+			jailbreak.exc(e);			
 		}
 	}
 }

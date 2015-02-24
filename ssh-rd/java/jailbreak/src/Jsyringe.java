@@ -2,7 +2,6 @@ public class Jsyringe {
 	private static final String nativeDir = "native";
 	private static final String native_lib = "jsyringeapi";
 	private static final String native_lib_helper = "mux_redux";
-
 	// Native method declaration
 	// PartialZip
 	public static native int download_file_from_zip(String url,
@@ -44,11 +43,11 @@ public class Jsyringe {
 			System.load(jsapi_tmp);
 			return true;
 		} catch (UnsatisfiedLinkError ule) {
-			gui.err(ule);
+			jailbreak.err(ule);
 		} catch (Exception e) {
-			gui.exc(e);
+			jailbreak.exc(e);
 		}
-		gui.error("FATAL: Cannot load native libraries; make sure you're using 32-bit JRE if on Windows!");
+		jailbreak.error("FATAL: Cannot load native libraries; make sure you're using 32-bit JRE if on Windows!");
 		return false;
 	}
 
