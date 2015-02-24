@@ -107,6 +107,7 @@ int main(int argc, char* argv[])
 
 	if(client->mode == kDfuMode && can_ra1n)
 	{
+		
 		int ret;
 		printf("linera1n compatible device detected, injecting limera1n.\n");
 		irecv_close(client);
@@ -133,7 +134,7 @@ int main(int argc, char* argv[])
 			fprintf(stderr, "Failed to reconnect.\n");
 			return 4;
 		}
-
+		
 		printf("uploading ibss...\n");
 		if(upload_ibss() >= 0)
 		{

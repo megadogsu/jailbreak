@@ -160,7 +160,7 @@ class Keychain(object):
             if p.has_key("srvr"):
                 addr = p["srvr"] + ":" + str(p["port"])
             row = [addr,
-                   str(p.get("acct","?")),
+                   str(p.get("acct","?").encode('utf-8')),
                    self.sanitize(p.get("data","?"))[:20],
                    p.get("agrp","?"),
                    KSECATTRACCESSIBLE.get(p["clas"])[18:]]

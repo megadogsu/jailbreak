@@ -1,0 +1,7 @@
+#pscp -pw alpine -P 2222 ramdisk_tools\bruteforce root@localhost:/
+#pscp -pw alpine -P 2222 ramdisk_tools\remoted_external root@localhost:/
+open sftp://root:alpine@localhost:2222/
+put -permissions=777 ramdisk_tools\bruteforce /
+put -permissions=777 ramdisk_tools\restored_external /
+close
+exit

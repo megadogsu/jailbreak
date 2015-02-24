@@ -71,7 +71,6 @@ int fetch_image(const char* path, const char* output) {
 	debug("Fetching %s...\n", path);
 	if (download_file_from_zip(device->url, path, output, &download_callback)
 			!= 0) {
-		printf("123");
 		error("Unable to fetch %s\n", path);
 		return -1;
 	}
@@ -120,7 +119,8 @@ int upload_dfu_image(const char* type) {
 	irecv_error_t error = IRECV_E_SUCCESS;
 
 	memset(image, '\0', 255);
-	snprintf(image, 254, "%s.%s", type, device->model);
+	sprintf(image, "iPhone2,1_5.1.1_9B206_Restore.ipsw");
+	//snprintf(image, 254, "%s.%s", type, device->model);
 
 	debug("Checking if %s already exists\n", image);
 	if (stat(image, &buf) != 0) {

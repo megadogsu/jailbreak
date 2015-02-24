@@ -1,0 +1,10 @@
+loadibec_d.o: loadibec.c ../include/libirecovery.h ../include/libpois0n.h \
+ ../include/common.h ../include/libirecovery.h
+
+../include/libirecovery.h:
+
+../include/libpois0n.h:
+
+../include/common.h:
+
+../include/libirecovery.h:
